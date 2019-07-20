@@ -1,0 +1,22 @@
+{
+  "name": "grephub",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:hmarr/grephub",
+  "author": "Harry Marr <harry.marr@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "gunzip-maybe": "^1.4.1",
+    "isomorphic-unfetch": "^3.0.0",
+    "next": "^9.0.2",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "split": "^1.0.1",
+    "tar-stream": "^2.1.0"
+  },
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start"
+  }
+}
