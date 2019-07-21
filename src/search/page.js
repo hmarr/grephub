@@ -3,14 +3,14 @@ import queryString from "query-string"
 import SearchForm from "./form";
 import Results from "./results";
 
-function Search({ match }) {
+function SearchPage({ match }) {
   const { account, repo } = match.params;
 
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchResults, setSearchResults] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
   const performSearch = async searchQuery => {
     setIsSearching(true);
-    setSearchResults([]);
+    setSearchResults(null);
 
     const query = queryString.stringify({
       query: searchQuery,
@@ -20,7 +20,7 @@ function Search({ match }) {
     const body = await rsp.json();
 
     setIsSearching(false);
-    setSearchResults(body.results);
+    setSearchResults(body);
   };
 
   const repoUrl =
@@ -36,8 +36,8 @@ function Search({ match }) {
         onSubmit={performSearch}
       />
       {isSearching && <p>Searching...</p>}
-      <Results repoUrl={repoUrl} results={searchResults} />
+      {searchResults && <Results repoUrl={repoUrl} results={searchResults} />}
     </div>
   );
 }
-export default Search;
+export default SearchPage;

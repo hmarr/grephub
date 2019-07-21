@@ -17,7 +17,7 @@ import (
 
 type searchResult struct {
 	Matches      []searchMatch `json:"matches"`
-	DurationMs   int64         `json:"duration"`
+	DurationMs   int64         `json:"duration_ms"`
 	BytesScanned int64         `json:"bytes_scanned"`
 	TimedOut     bool          `json:"timed_out"`
 }
@@ -45,7 +45,7 @@ func searchRepo(ctx context.Context, repo string, query *regexp.Regexp) (*search
 		return nil, err
 	}
 
-	result.DurationMs = time.Since(startTime).Nanoseconds() / 1000
+	result.DurationMs = int64(time.Since(startTime) / time.Millisecond)
 
 	return result, nil
 }
