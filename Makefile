@@ -1,0 +1,3 @@
+build:
+	mkdir -p functions
+	cd api/search && go build -o ../../functions/search ./...
