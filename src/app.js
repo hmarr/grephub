@@ -16,6 +16,7 @@ const PageContainer = styled.div`
 
 const SiteTitle = styled(Link)`
   color: #ffffff;
+  margin-left: 5px;
   text-decoration: none;
 `;
 
