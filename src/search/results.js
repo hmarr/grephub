@@ -11,6 +11,7 @@ const FileLink = styled(Link)`
 `;
 
 const ResultsTable = styled.table`
+  table-layout: fixed;
   width: 100%;
 `;
 
@@ -60,6 +61,7 @@ const ResultContent = styled.td`
   font-family: ${codeFont};
   font-size: 12px;
   padding: 3px 10px;
+  word-break: break-all;
 `;
 
 const ResultHightlight = styled.span`
