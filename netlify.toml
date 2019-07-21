@@ -7,3 +7,7 @@
   GO_IMPORT_PATH = "github.com/hmarr/grephub"
   GO111MODULE = "on"
 
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
