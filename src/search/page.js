@@ -7,13 +7,16 @@ function Search({ match }) {
   const { account, repo } = match.params;
 
   const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
   const performSearch = async searchQuery => {
+    setIsSearching(true);
     const query = queryString.stringify({
       query: searchQuery,
       repo: `${account}/${repo}`
     })
     const rsp = await fetch(`/.netlify/functions/search?${query}`);
     const body = await rsp.json();
+    setIsSearching(false);
     setSearchResults(body.results);
   };
 
@@ -29,6 +32,7 @@ function Search({ match }) {
         placeholder={`Search ${account}/${repo}`}
         onSubmit={performSearch}
       />
+      {isSearching && <p>Searching...</p>}
       <Results repoUrl={repoUrl} results={searchResults} />
     </div>
   );
