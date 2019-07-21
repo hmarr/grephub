@@ -10,12 +10,15 @@ function Search({ match }) {
   const [isSearching, setIsSearching] = useState(false);
   const performSearch = async searchQuery => {
     setIsSearching(true);
+    setSearchResults([]);
+
     const query = queryString.stringify({
       query: searchQuery,
       repo: `${account}/${repo}`
     })
     const rsp = await fetch(`/.netlify/functions/search?${query}`);
     const body = await rsp.json();
+
     setIsSearching(false);
     setSearchResults(body.results);
   };
