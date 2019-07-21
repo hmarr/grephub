@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"regexp"
@@ -12,27 +11,6 @@ import (
 
 	"github.com/apex/gateway"
 )
-
-type searchResults struct {
-	Results []searchResult `json:"results"`
-}
-
-func requestRepo(ctx context.Context, repo string) (io.ReadCloser, error) {
-	url := fmt.Sprintf("https://github.com/%s/archive/master.tar.gz", repo)
-	req, err := http.NewRequest(http.MethodGet, url, nil)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-
-	client := &http.Client{}
-	rsp, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	return rsp.Body, err
-}
 
 func searchHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
@@ -57,16 +35,14 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	results, err := searchRepo(ctx, repo, queryRe)
+	result, err := searchRepo(ctx, repo, queryRe)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	searchResults := searchResults{Results: results}
-
 	enc := json.NewEncoder(w)
-	if err := enc.Encode(searchResults); err != nil {
+	if err := enc.Encode(result); err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
