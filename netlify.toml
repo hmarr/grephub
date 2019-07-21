@@ -1,5 +1,5 @@
 [build]
-  command = "make build"
+  command = "make build-all"
   functions = "functions"
 
 [build.environment]
