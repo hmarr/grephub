@@ -5,4 +5,5 @@
 [build.environment]
   # Change this path with the path to your repository
   GO_IMPORT_PATH = "github.com/hmarr/grephub"
+  GO111MODULE = "on"
 

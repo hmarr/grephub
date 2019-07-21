@@ -1,4 +1,4 @@
-module github.com/hmarr/grephub/api
+module github.com/hmarr/grephub/api/search
 
 go 1.12
 
