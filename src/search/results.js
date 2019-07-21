@@ -1,6 +1,6 @@
 import React from "react";
 import { BorderBox, Box, Link } from "@primer/components";
-import { gray } from "primer-colors";
+import { yellow, gray } from "primer-colors";
 import styled from "styled-components";
 
 const FileLink = styled(Link)`
@@ -8,6 +8,10 @@ const FileLink = styled(Link)`
   font-weight: 500;
   margin-top: 20px;
   margin-bottom: 5px;
+`;
+
+const ResultsTable = styled.table`
+  width: 100%;
 `;
 
 function Results({ repoUrl, results }) {
@@ -18,13 +22,13 @@ function Results({ repoUrl, results }) {
       <div key={file}>
         <FileLink href={`${repoUrl}/blob/master/${file}`}>{file}</FileLink>
         <BorderBox padding="3px 0">
-          <table>
+          <ResultsTable>
             <tbody>
               {resultsByFile[file].map(r => (
                 <ResultLine key={r.line_number} fileUrl={fileUrl} result={r} />
               ))}
             </tbody>
-          </table>
+          </ResultsTable>
         </BorderBox>
       </div>
     );
@@ -35,6 +39,12 @@ function Results({ repoUrl, results }) {
 
 const codeFont =
   "SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace";
+
+const ResultRow = styled.tr`
+ &:hover {
+  background: ${gray[1]};
+ }
+`;
 
 const LineNumber = styled.td`
   color: ${gray[5]};
@@ -52,17 +62,30 @@ const ResultContent = styled.td`
   padding: 3px 10px;
 `;
 
+const ResultHightlight = styled.span`
+  font-weight: 600;
+  background: ${yellow[2]};
+`;
+
 function ResultLine({ result, fileUrl }) {
   const lineUrl = `${fileUrl}#L${result.line_number}`;
+  const content = (
+    <span>
+      <span>{result.line.slice(0, result.match_pos[0])}</span>
+      <ResultHightlight>
+        {result.line.slice(result.match_pos[0], result.match_pos[1])}
+      </ResultHightlight>
+      <span>{result.line.slice(result.match_pos[1])}</span>
+    </span>
+  );
+
   return (
-    <tr>
+    <ResultRow>
       <LineNumber>
-        <Link href={lineUrl}>
-            {result.line_number}
-        </Link>
+        <Link href={lineUrl}>{result.line_number}</Link>
       </LineNumber>
-      <ResultContent>{result.line}</ResultContent>
-    </tr>
+      <ResultContent>{content}</ResultContent>
+    </ResultRow>
   );
 }
 

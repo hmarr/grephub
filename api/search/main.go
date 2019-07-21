@@ -10,6 +10,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 
@@ -24,6 +25,7 @@ type searchResult struct {
 	File       string `json:"file"`
 	LineNumber int    `json:"line_number"`
 	Line       string `json:"line"`
+	MatchPos   []int  `json:"match_pos"`
 }
 
 func requestRepo(ctx context.Context, repo string) (io.ReadCloser, error) {
@@ -43,7 +45,7 @@ func requestRepo(ctx context.Context, repo string) (io.ReadCloser, error) {
 	return rsp.Body, err
 }
 
-func searchTgzStream(stream io.ReadCloser, query string) ([]searchResult, error) {
+func searchTgzStream(stream io.ReadCloser, query *regexp.Regexp) ([]searchResult, error) {
 	zipReader, err := gzip.NewReader(stream)
 	if err != nil {
 		return nil, err
@@ -76,7 +78,7 @@ func searchTgzStream(stream io.ReadCloser, query string) ([]searchResult, error)
 	return results, nil
 }
 
-func searchFileStream(name string, reader io.Reader, query string) ([]searchResult, error) {
+func searchFileStream(name string, reader io.Reader, query *regexp.Regexp) ([]searchResult, error) {
 	results := []searchResult{}
 	lineNo := 1
 	bufReader := bufio.NewReader(reader)
@@ -97,13 +99,16 @@ func searchFileStream(name string, reader io.Reader, query string) ([]searchResu
 			ignoreRest = true
 		}
 
-		if strings.Contains(string(line), query) {
+		lineStr := string(line)
+
+		matchIndex := query.FindStringIndex(lineStr)
+		if matchIndex != nil {
 			results = append(results, searchResult{
 				File:       name,
 				LineNumber: lineNo,
-				Line:       string(line),
+				Line:       lineStr,
+				MatchPos:   matchIndex,
 			})
-			//fmt.Println(lineNo, string(line))
 		}
 
 		lineNo++
@@ -116,7 +121,7 @@ func searchFileStream(name string, reader io.Reader, query string) ([]searchResu
 	return results, nil
 }
 
-func searchRepo(ctx context.Context, repo, query string) ([]searchResult, error) {
+func searchRepo(ctx context.Context, repo string, query *regexp.Regexp) ([]searchResult, error) {
 	repoStream, err := requestRepo(ctx, repo)
 	if err != nil {
 		return nil, err
@@ -167,7 +172,13 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	results, err := searchRepo(ctx, repo, query)
+	queryRe, err := regexp.Compile(query)
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+	results, err := searchRepo(ctx, repo, queryRe)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

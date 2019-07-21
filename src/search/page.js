@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import styled from "styled-components";
 import queryString from "query-string"
 import SearchForm from "./form";
 import Results from "./results";
