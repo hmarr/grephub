@@ -157,7 +157,7 @@ func main() {
 
 func searchHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
-	ctx, cancelFunc := context.WithTimeout(ctx, 12*time.Second)
+	ctx, cancelFunc := context.WithTimeout(ctx, 9*time.Second)
 	defer cancelFunc()
 
 	repo := r.URL.Query().Get("repo")
