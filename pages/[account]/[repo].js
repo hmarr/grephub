@@ -18,15 +18,53 @@ const Search = () => {
     setResults(json.results);
   }
 
-  const textResults = results.
-    map(r => `${r.file}:${r.lineNumber} ${r.line}`).
-    join('\n');
+  const resultsByFile = results.
+    reduce((grouped, r) => {
+      if (!grouped[r.file]) {
+        grouped[r.file] = [];
+      }
+      grouped[r.file].push(r);
+      return grouped;
+    }, {});
+
+    //map(r => `${r.file}:${r.lineNumber} ${r.line}`).
+    //join('\n');
+
+  const resultLine = (result) => {
+    return (
+      <div>
+        <style jsx>{`
+        span {
+          font-family: monospace;
+        }
+        span.lineNumber {
+          text-align: right;
+          width: 40px;
+        }
+        `}</style>
+        <span class="lineNumber">{result.lineNumber}</span>
+        <span>{result.line}</span>
+      </div>
+    )
+  }
+
+  const fileResults = (file) => {
+    const results = resultsByFile[file];
+    return (
+      <div key={file}>
+        <strong>{file}</strong>
+        {results.map(resultLine)}
+      </div>
+    );
+    //map(r => `${r.file}:${r.lineNumber} ${r.line}`).
+    //join('\n');
+  }
 
   return (
     <div>
       <h1>{account}/{repo}</h1>
       <SearchForm onSubmit={search} />
-      <pre>{textResults}</pre>
+      {Object.keys(resultsByFile).map((file) => fileResults(file))}
     </div>
   )
 };
