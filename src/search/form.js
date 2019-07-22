@@ -10,7 +10,7 @@ class Form extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { query: '' }
+    this.state = { query: "" };
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -35,11 +35,14 @@ class Form extends React.Component {
             size="large"
             placeholder={this.props.placeholder}
             value={this.state.query}
-            onChange={this.handleInputChange} />
-          <Button type="submit" ml={2}>Search</Button>
+            onChange={this.handleInputChange}
+          />
+          <Button disabled={!this.props.active} type="submit" ml={2}>
+            Search
+          </Button>
         </Flex>
       </form>
-    )
+    );
   }
 }
 

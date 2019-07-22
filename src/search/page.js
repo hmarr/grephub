@@ -30,9 +30,10 @@ function SearchPage({ match }) {
     encodeURIComponent(repo);
 
   return (
-    <div style={{ maxWidth: 800, margin: "0 auto" }}>
+    <div>
       <SearchForm
         placeholder={`Search ${account}/${repo}`}
+        active={!isSearching}
         onSubmit={performSearch}
       />
       {isSearching && <p>Searching...</p>}

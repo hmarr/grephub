@@ -1,14 +1,20 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { Heading, Text } from "@primer/components";
 
 function Home() {
   return (
     <div>
+      <Heading>Search GitHub repositories with regular expressions</Heading>
       <p>
-        GrepHub lets you search GitHub the way you're used to searching code.
+        Like <code>git grep</code> but on the internet.
       </p>
       <p>
-        Try searching <Link to="/hmarr/dotfiles">@hmarr's dotfiles</Link>.
+       Just replace "github.com" in a repository's URL with "grephub.com", and
+       you're all set.
+      </p>
+      <p>
+        For instance, to search lodash, go to <Link to="/lodash/lodash">grephub.com/lodash/lodash</Link>.
       </p>
     </div>
   );
