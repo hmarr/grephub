@@ -1,43 +1,50 @@
-import React, { useState } from "react";
-import queryString from "query-string"
-import SearchForm from "./form";
-import Results from "./results";
+import React, { useState, useEffect } from "react";
+import RepoSearch from "./repo-search";
 
 function SearchPage({ match }) {
   const { account, repo } = match.params;
 
-  const [searchResults, setSearchResults] = useState(null);
-  const [isSearching, setIsSearching] = useState(false);
-  const performSearch = async searchQuery => {
-    setIsSearching(true);
-    setSearchResults(null);
+  const [repoDetails, setRepoDetails] = useState(null);
+  const [error, setError] = useState(null);
+  useEffect(() => {
+    const fetchRepo = async () => {
+      const url = `https://api.github.com/repos/${account}/${repo}`;
 
-    const query = queryString.stringify({
-      query: searchQuery,
-      repo: `${account}/${repo}`
-    })
-    const rsp = await fetch(`/.netlify/functions/search?${query}`);
-    const body = await rsp.json();
+      let response;
+      try {
+        response = await fetch(url);
+      } catch (err) {
+        setError("Failed to fetch repository details from GitHub");
+        return;
+      }
 
-    setIsSearching(false);
-    setSearchResults(body);
-  };
+      switch (response.status) {
+        case 200:
+          break;
+        case 404:
+          setError(`It seems like "${account}/${repo}" doesn't exist`);
+          return;
+        default:
+          setError("Something went wrong, sorry!");
+          return;
+      }
 
-  const repoUrl =
-    "https://github.com/" +
-    encodeURIComponent(account) +
-    "/" +
-    encodeURIComponent(repo);
+      const data = await response.json();
+      setRepoDetails(data);
+    };
+
+    fetchRepo();
+  }, [account, repo]);
 
   return (
     <div>
-      <SearchForm
-        placeholder={`Search ${account}/${repo}`}
-        active={!isSearching}
-        onSubmit={performSearch}
-      />
-      {isSearching && <p>Searching...</p>}
-      {searchResults && <Results repoUrl={repoUrl} results={searchResults} />}
+      {repoDetails ? (
+        <RepoSearch repo={repoDetails} />
+      ) : error ? (
+        error
+      ) : (
+        "Loading..."
+      )}
     </div>
   );
 }

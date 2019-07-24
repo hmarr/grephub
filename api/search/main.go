@@ -7,10 +7,27 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/apex/gateway"
 )
+
+type errorResponse struct {
+	Error   string `json:"error"`
+	Message string `json:"message"`
+}
+
+func respondJSON(w http.ResponseWriter, statusCode int, obj interface{}) {
+	bytes, err := json.Marshal(obj)
+	if err != nil {
+		http.Error(w, `{"error": "internal_error", "message": "internal error"}`, 500)
+		return
+	}
+	w.WriteHeader(statusCode)
+	w.Write(bytes)
+}
 
 func searchHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
@@ -19,33 +36,76 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 
 	repo := r.URL.Query().Get("repo")
 	if repo == "" {
-		http.Error(w, "missing 'repo' parameter'", 400)
+		respondJSON(w, 400, errorResponse{
+			Error:   "invalid_parameter",
+			Message: "Missing 'repo' parameter'",
+		})
 		return
 	}
+
+	opts := &searchOpts{repo: repo}
 
 	query := r.URL.Query().Get("query")
 	if query == "" {
-		http.Error(w, "missing 'query' parameter'", 400)
+		respondJSON(w, 400, errorResponse{
+			Error:   "invalid_parameter",
+			Message: "Query cannot be empty",
+		})
 		return
 	}
+	opts.simpleQuery = query
 
-	queryRe, err := regexp.Compile(query)
+	regex, err := strconv.ParseBool(r.URL.Query().Get("regex"))
 	if err != nil {
-		http.Error(w, err.Error(), 400)
+		respondJSON(w, 400, errorResponse{
+			Error:   "invalid_parameter",
+			Message: "Invalid regex value",
+		})
 		return
 	}
+	opts.regex = regex
 
-	result, err := searchRepo(ctx, repo, queryRe)
+	caseSensitive, err := strconv.ParseBool(r.URL.Query().Get("caseSensitive"))
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		respondJSON(w, 400, errorResponse{
+			Error:   "invalid_parameter",
+			Message: "Invalid caseSensitive value",
+		})
+		return
+	}
+	opts.caseSensitive = caseSensitive
+	if !caseSensitive {
+		opts.simpleQuery = strings.ToLower(query)
+	}
+
+	if regex {
+		if !caseSensitive {
+			query = "(?i)" + query
+		}
+
+		queryRe, err := regexp.Compile(query)
+		if err != nil {
+			errMsg := strings.Split(err.Error(), ":")[1]
+			respondJSON(w, 400, errorResponse{
+				Error:   "invalid_query",
+				Message: "Invalid query: " + errMsg,
+			})
+			return
+		}
+		opts.regexQuery = queryRe
+	}
+
+	result, err := searchRepo(ctx, opts)
+	if err != nil {
+		log.Println(err)
+		respondJSON(w, 500, errorResponse{
+			Error:   "search_error",
+			Message: "Search failed for an unknown reason",
+		})
 		return
 	}
 
-	enc := json.NewEncoder(w)
-	if err := enc.Encode(result); err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
+	respondJSON(w, 200, result)
 }
 
 func main() {

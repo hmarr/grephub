@@ -1,6 +1,6 @@
 import React from "react";
-import { BorderBox, Box, Link } from "@primer/components";
-import { yellow, gray } from "primer-colors";
+import { Box } from "@primer/components";
+import { gray } from "primer-colors";
 import styled from "styled-components";
 import Matches from "./matches";
 
@@ -14,9 +14,16 @@ const SecondaryInfo = styled.span`
   float: right;
 `;
 
+const Divider = styled.hr`
+  border: 1px solid ${gray[2]};
+  border-bottom: none;
+  margin: 15px 0;
+`;
+
 function Results({ repoUrl, results }) {
   return (
     <Box paddingBottom="20px">
+      <Divider />
       <SearchInfo>
         Found {(results.matches || []).length} results in {results.duration_ms}{" "}
         ms

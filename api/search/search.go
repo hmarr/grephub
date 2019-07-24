@@ -15,6 +15,14 @@ import (
 	"time"
 )
 
+type searchOpts struct {
+	repo          string
+	regexQuery    *regexp.Regexp
+	simpleQuery   string
+	regex         bool
+	caseSensitive bool
+}
+
 type searchResult struct {
 	Matches      []searchMatch `json:"matches"`
 	DurationMs   int64         `json:"duration_ms"`
@@ -29,18 +37,18 @@ type searchMatch struct {
 	MatchPos   []int  `json:"match_pos"`
 }
 
-func searchRepo(ctx context.Context, repo string, query *regexp.Regexp) (*searchResult, error) {
+func searchRepo(ctx context.Context, opts *searchOpts) (*searchResult, error) {
 	result := &searchResult{
 		Matches: []searchMatch{},
 	}
 	startTime := time.Now()
 
-	repoStream, err := requestRepo(ctx, repo)
+	repoStream, err := requestRepo(ctx, opts.repo)
 	if err != nil {
 		return nil, err
 	}
 
-	err = searchTgzStream(repoStream, query, result)
+	err = searchTgzStream(repoStream, opts, result)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +75,7 @@ func requestRepo(ctx context.Context, repo string) (io.ReadCloser, error) {
 	return rsp.Body, err
 }
 
-func searchTgzStream(stream io.ReadCloser, query *regexp.Regexp, result *searchResult) error {
+func searchTgzStream(stream io.ReadCloser, opts *searchOpts, result *searchResult) error {
 	zipReader, err := gzip.NewReader(stream)
 	if err != nil {
 		return err
@@ -96,14 +104,14 @@ func searchTgzStream(stream io.ReadCloser, query *regexp.Regexp, result *searchR
 		}
 
 		fileName := strings.SplitN(header.Name, "/", 2)[1]
-		if err = searchFileStream(fileName, tarReader, query, result); err != nil {
+		if err = searchFileStream(fileName, tarReader, opts, result); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func searchFileStream(name string, reader io.Reader, query *regexp.Regexp, result *searchResult) error {
+func searchFileStream(name string, reader io.Reader, opts *searchOpts, result *searchResult) error {
 	lineNo := 1
 	bufReader := bufio.NewReader(reader)
 	ignoreRest := false
@@ -134,13 +142,13 @@ func searchFileStream(name string, reader io.Reader, query *regexp.Regexp, resul
 		result.BytesScanned += int64(len(line))
 		lineStr := string(line)
 
-		matchIndex := query.FindStringIndex(lineStr)
-		if matchIndex != nil {
+		matchPos := searchLine(lineStr, opts)
+		if matchPos != nil {
 			result.Matches = append(result.Matches, searchMatch{
 				File:       name,
 				LineNumber: lineNo,
 				Line:       lineStr,
-				MatchPos:   matchIndex,
+				MatchPos:   matchPos,
 			})
 		}
 
@@ -152,6 +160,23 @@ func searchFileStream(name string, reader io.Reader, query *regexp.Regexp, resul
 	}
 
 	return nil
+}
+
+func searchLine(line string, opts *searchOpts) []int {
+	// Regex search
+	if opts.regex {
+		return opts.regexQuery.FindStringIndex(line)
+	}
+
+	// Simple exact search
+	if !opts.caseSensitive {
+		line = strings.ToLower(line)
+	}
+	idx := strings.Index(line, opts.simpleQuery)
+	if idx < 0 {
+		return nil
+	}
+	return []int{idx, idx + len(opts.simpleQuery)}
 }
 
 func isTimeout(err error) bool {

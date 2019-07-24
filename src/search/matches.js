@@ -15,11 +15,6 @@ const MatchesTable = styled.table`
   width: 100%;
 `;
 
-const SearchInfo = styled.div`
-  color: ${gray[6]};
-  text-align: right;
-`;
-
 function Matches({ repoUrl, matches }) {
   const matchesByFile = groupMatches(matches || []);
   const matchRows = Object.keys(matchesByFile).map(file => {
@@ -66,6 +61,7 @@ const MatchContent = styled.td`
   font-family: ${codeFont};
   font-size: 12px;
   padding: 3px 10px;
+  white-space: pre-wrap;
   word-break: break-all;
 `;
 
