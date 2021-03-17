@@ -5,4 +5,4 @@ build-functions:
 	cd api/search && go get && go build -o ../../functions/search ./...
 
 build-site:
-	yarn build
+	npm run build
