@@ -26,6 +26,10 @@ function Home() {
           It doesn't use an index so it's kind of slow and it won't work well
           with large repositories
         </li>
+        <li>
+          Streaming the whole repository from GitHub for each query is a
+          terrible idea for a variety of reasons
+        </li>
       </ul>
 
       <Heading fontSize={3}>Similar projects</Heading>
