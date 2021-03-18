@@ -13,6 +13,7 @@ import (
 	"regexp"
 	"strings"
 	"time"
+	"unicode/utf8"
 )
 
 const maxResults = 5_000
@@ -113,7 +114,7 @@ func searchTgzStream(stream io.ReadCloser, opts *searchOpts, result *searchResul
 
 		if result.ReachedMaxResults {
 			break
-	}
+		}
 	}
 	return nil
 }
@@ -177,7 +178,7 @@ func searchFileStream(name string, reader io.Reader, opts *searchOpts, result *s
 func searchLine(line string, opts *searchOpts) []int {
 	// Regex search
 	if opts.regex {
-		return opts.regexQuery.FindStringIndex(line)
+		return locBytesToRunes(opts.regexQuery.FindStringIndex(line), line)
 	}
 
 	// Simple exact search
@@ -188,7 +189,15 @@ func searchLine(line string, opts *searchOpts) []int {
 	if idx < 0 {
 		return nil
 	}
-	return []int{idx, idx + len(opts.simpleQuery)}
+	return locBytesToRunes([]int{idx, idx + len(opts.simpleQuery)}, line)
+}
+
+// Convert the byte offsets to unicode character offsets
+func locBytesToRunes(loc []int, s string) []int {
+	if len(loc) != 2 {
+		return nil
+	}
+	return []int{utf8.RuneCountInString(s[0:loc[0]]), utf8.RuneCountInString(s[0:loc[1]])}
 }
 
 func isTimeout(err error) bool {
