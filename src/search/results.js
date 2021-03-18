@@ -20,7 +20,7 @@ const Divider = styled.hr`
   margin: 15px 0;
 `;
 
-function Results({ repoUrl, results }) {
+function Results({ repoUrl, branch, results }) {
   return (
     <Box paddingBottom="20px">
       <Divider />
@@ -32,7 +32,7 @@ function Results({ repoUrl, results }) {
           Scanned {humaniseBytes(results.bytes_scanned)}
         </SecondaryInfo>
       </SearchInfo>
-      <Matches repoUrl={repoUrl} matches={results.matches} />
+      <Matches repoUrl={repoUrl} branch={branch} matches={results.matches} />
     </Box>
   );
 }

@@ -16,10 +16,11 @@ import (
 	"unicode/utf8"
 )
 
-const maxResults = 5_000
+const maxResults = 5000
 
 type searchOpts struct {
 	repo          string
+	branch        string
 	regexQuery    *regexp.Regexp
 	simpleQuery   string
 	regex         bool
@@ -47,7 +48,7 @@ func searchRepo(ctx context.Context, opts *searchOpts) (*searchResult, error) {
 	}
 	startTime := time.Now()
 
-	repoStream, err := requestRepo(ctx, opts.repo)
+	repoStream, err := requestRepo(ctx, opts.repo, opts.branch)
 	if err != nil {
 		return nil, err
 	}
@@ -62,8 +63,8 @@ func searchRepo(ctx context.Context, opts *searchOpts) (*searchResult, error) {
 	return result, nil
 }
 
-func requestRepo(ctx context.Context, repo string) (io.ReadCloser, error) {
-	url := fmt.Sprintf("https://github.com/%s/archive/master.tar.gz", repo)
+func requestRepo(ctx context.Context, repo, branch string) (io.ReadCloser, error) {
+	url := fmt.Sprintf("https://github.com/%s/archive/%s.tar.gz", repo, branch)
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err

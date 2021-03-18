@@ -45,6 +45,16 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 
 	opts := &searchOpts{repo: repo}
 
+	branch := r.URL.Query().Get("branch")
+	if branch == "" {
+		respondJSON(w, 400, errorResponse{
+			Error:   "invalid_parameter",
+			Message: "Missing 'branch' parameter'",
+		})
+		return
+	}
+	opts.branch = branch
+
 	query := r.URL.Query().Get("query")
 	if query == "" {
 		respondJSON(w, 400, errorResponse{

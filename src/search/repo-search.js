@@ -18,6 +18,7 @@ function RepoSearch({ repo, initialQuery }) {
       regex,
       caseSensitive,
       repo: repo.full_name,
+      branch: repo.default_branch
     })
     const rsp = await fetch(`/.netlify/functions/search?${qs}`);
     setIsSearching(false);
@@ -29,7 +30,7 @@ function RepoSearch({ repo, initialQuery }) {
     } else {
       setError(body);
     }
-  }, [repo.full_name]);
+  }, [repo.full_name, repo.default_branch]);
 
   // Search immediately if the ?q= query string is populated
   useEffect(() => {
@@ -48,7 +49,7 @@ function RepoSearch({ repo, initialQuery }) {
         initialQuery={initialQuery}
       />
       {isSearching && <p>Searching...</p>}
-      {searchResults && <Results repoUrl={repoUrl} results={searchResults} />}
+      {searchResults && <Results repoUrl={repoUrl} branch={repo.default_branch} results={searchResults} />}
       {error && <Flash mt="15px" scheme="red">{error.message}</Flash>}
     </div>
   );

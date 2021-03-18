@@ -15,13 +15,13 @@ const MatchesTable = styled.table`
   width: 100%;
 `;
 
-function Matches({ repoUrl, matches }) {
+function Matches({ repoUrl, branch, matches }) {
   const matchesByFile = groupMatches(matches || []);
   const matchRows = Object.keys(matchesByFile).map(file => {
-    const fileUrl = `${repoUrl}/blob/master/${file}`;
+    const fileUrl = `${repoUrl}/blob/${branch}/${file}`;
     return (
       <div key={file}>
-        <FileLink href={`${repoUrl}/blob/master/${file}`}>{file}</FileLink>
+        <FileLink href={fileUrl}>{file}</FileLink>
         <BorderBox padding="3px 0">
           <MatchesTable>
             <tbody>
