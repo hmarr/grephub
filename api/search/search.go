@@ -15,6 +15,8 @@ import (
 	"time"
 )
 
+const maxResults = 5_000
+
 type searchOpts struct {
 	repo          string
 	regexQuery    *regexp.Regexp
@@ -24,10 +26,11 @@ type searchOpts struct {
 }
 
 type searchResult struct {
-	Matches      []searchMatch `json:"matches"`
-	DurationMs   int64         `json:"duration_ms"`
-	BytesScanned int64         `json:"bytes_scanned"`
-	TimedOut     bool          `json:"timed_out"`
+	Matches           []searchMatch `json:"matches"`
+	DurationMs        int64         `json:"duration_ms"`
+	BytesScanned      int64         `json:"bytes_scanned"`
+	TimedOut          bool          `json:"timed_out"`
+	ReachedMaxResults bool          `json:"reached_max_results"`
 }
 
 type searchMatch struct {
@@ -107,6 +110,10 @@ func searchTgzStream(stream io.ReadCloser, opts *searchOpts, result *searchResul
 		if err = searchFileStream(fileName, tarReader, opts, result); err != nil {
 			return err
 		}
+
+		if result.ReachedMaxResults {
+			break
+	}
 	}
 	return nil
 }
@@ -150,6 +157,11 @@ func searchFileStream(name string, reader io.Reader, opts *searchOpts, result *s
 				Line:       lineStr,
 				MatchPos:   matchPos,
 			})
+
+			if len(result.Matches) >= maxResults {
+				result.ReachedMaxResults = true
+				break
+			}
 		}
 
 		lineNo++

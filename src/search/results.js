@@ -25,8 +25,8 @@ function Results({ repoUrl, results }) {
     <Box paddingBottom="20px">
       <Divider />
       <SearchInfo>
-        Found {(results.matches || []).length} results in {results.duration_ms}{" "}
-        ms
+        Found {(results.matches || []).length}{results.reached_max_results ? "+" : ""}{" "}
+        results in {results.duration_ms} ms
         {results.timed_out && " (query timed out)"}
         <SecondaryInfo>
           Scanned {humaniseBytes(results.bytes_scanned)}
