@@ -18,7 +18,7 @@ class Form extends React.Component {
     super(props);
 
     this.state = {
-      query: "",
+      query: props.initialQuery ?? "",
       regex: true,
       caseSensitive: false,
     };

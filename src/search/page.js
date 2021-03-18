@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
+import queryString from "query-string"
 import RepoSearch from "./repo-search";
 
 function SearchPage({ match }) {
   const { account, repo } = match.params;
+  const query = queryString.parse(window.location.search);
+  const initialQuery = query["q"];
 
   const [repoDetails, setRepoDetails] = useState(null);
   const [error, setError] = useState(null);
@@ -39,7 +42,7 @@ function SearchPage({ match }) {
   return (
     <div>
       {repoDetails ? (
-        <RepoSearch repo={repoDetails} />
+        <RepoSearch repo={repoDetails} initialQuery={initialQuery} />
       ) : error ? (
         error
       ) : (

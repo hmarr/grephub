@@ -37,7 +37,7 @@ function App() {
           <Container>
             <PageContainer>
               <Route path="/" exact component={Home} />
-              <Route path="/:account/:repo" exact component={Search} />
+              <Route path="/:account/:repo" component={Search} />
             </PageContainer>
           </Container>
         </BaseStyles>

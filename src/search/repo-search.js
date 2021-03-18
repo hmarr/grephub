@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import queryString from "query-string"
 import { Flash } from "@primer/components";
 import SearchForm from "./form";
 import Results from "./results";
 
-function RepoSearch({ repo }) {
+function RepoSearch({ repo, initialQuery }) {
   const [searchResults, setSearchResults] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState(null);
-  const performSearch = async ({ query, regex, caseSensitive }) => {
+
+  const performSearch = useCallback(async ({ query, regex, caseSensitive }) => {
     setIsSearching(true);
     setSearchResults(null);
 
@@ -22,13 +23,20 @@ function RepoSearch({ repo }) {
     setIsSearching(false);
 
     const body = await rsp.json();
-    if (rsp.status === 200 ) {
+    if (rsp.status === 200) {
       setError(null);
       setSearchResults(body);
     } else {
       setError(body);
     }
-  };
+  }, [repo.full_name]);
+
+  // Search immediately if the ?q= query string is populated
+  useEffect(() => {
+    if (initialQuery) {
+      performSearch({ query: initialQuery, regex: true, caseSensitive: false });
+    }
+  }, [initialQuery, performSearch]);
 
   const repoUrl = `https://github.com/${repo.full_name}`
   return (
@@ -37,6 +45,7 @@ function RepoSearch({ repo }) {
         placeholder={`Search ${repo.full_name}`}
         active={!isSearching}
         onSubmit={performSearch}
+        initialQuery={initialQuery}
       />
       {isSearching && <p>Searching...</p>}
       {searchResults && <Results repoUrl={repoUrl} results={searchResults} />}
