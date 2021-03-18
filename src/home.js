@@ -1,6 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Heading } from "@primer/components";
+import { Heading, Text } from "@primer/components";
+import styled from "styled-components";
+
+const Divider = styled('hr')`
+  border: none;
+  height: 1px;
+  background: #dddddd;
+  margin: 2em 0;
+`;
+
 
 function Home() {
   return (
@@ -50,6 +59,11 @@ function Home() {
           <a href="https://github.com/livegrep/livegrep">Livegrep</a>
         </li>
       </ul>
+      <Divider />
+      <Text color="grayLight">
+        Built by <a href="https://hmarr.com">@hmarr</a>.
+        Source available on <a href="https://github.com/hmarr/grephub">GitHub</a>.
+      </Text>
     </div>
   );
 }
