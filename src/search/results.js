@@ -1,11 +1,11 @@
 import React from "react";
-import { Box } from "@primer/components";
-import { gray } from "primer-colors";
+import { Box } from "@primer/react";
+import colors from "primer-colors";
 import styled from "styled-components";
 import Matches from "./matches";
 
 const SearchInfo = styled.div`
-  color: ${gray[5]};
+  color: ${colors.gray[5]};
   font-size: 13px;
   margin-top: 10px;
 `;
@@ -15,7 +15,7 @@ const SecondaryInfo = styled.span`
 `;
 
 const Divider = styled.hr`
-  border: 1px solid ${gray[2]};
+  border: 1px solid ${colors.gray[2]};
   border-bottom: none;
   margin: 15px 0;
 `;

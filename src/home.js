@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Heading, Text } from "@primer/components";
+import { Heading, Text } from "@primer/react";
 import styled from "styled-components";
 
 const Divider = styled('hr')`

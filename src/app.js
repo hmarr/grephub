@@ -1,8 +1,8 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import { theme, Box, BaseStyles, Heading } from "@primer/components";
-import { gray } from "primer-colors";
-import styled, { ThemeProvider } from "styled-components";
+import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import { ThemeProvider, Box, BaseStyles, Heading } from "@primer/react";
+import colors from "primer-colors";
+import styled from "styled-components";
 import Home from "./home";
 import Search from "./search/page";
 
@@ -25,9 +25,9 @@ const SiteTitle = styled(Link)`
 function App() {
   return (
     <Router>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider>
         <BaseStyles>
-          <Box bg={gray[9]}>
+          <Box bg={colors.gray[9]}>
             <Container>
               <Heading fontSize={3} color="#ffffff">
                 <SiteTitle to="/">GrepHub</SiteTitle>
@@ -36,8 +36,10 @@ function App() {
           </Box>
           <Container>
             <PageContainer>
-              <Route path="/" exact component={Home} />
-              <Route path="/:account/:repo" component={Search} />
+              <Routes>
+                <Route path="/" exact element={<Home />} />
+                <Route path="/:account/:repo" element={<Search />} />
+              </Routes>
             </PageContainer>
           </Container>
         </BaseStyles>

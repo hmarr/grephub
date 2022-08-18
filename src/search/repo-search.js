@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import queryString from "query-string"
-import { Flash } from "@primer/components";
+import { Flash } from "@primer/react";
 import SearchForm from "./form";
 import Results from "./results";
 

@@ -1,6 +1,6 @@
 import React from "react";
-import { BorderBox, Box, Link } from "@primer/components";
-import { yellow, gray } from "primer-colors";
+import { Box, Link } from "@primer/react";
+import colors from "primer-colors";
 import styled from "styled-components";
 
 const FileLink = styled(Link)`
@@ -22,7 +22,7 @@ function Matches({ repoUrl, branch, matches }) {
     return (
       <div key={file}>
         <FileLink href={fileUrl}>{file}</FileLink>
-        <BorderBox padding="3px 0">
+        <Box padding="3px 0" borderWidth="1px" borderStyle="solid" borderColor="border.default" borderRadius={2}>
           <MatchesTable>
             <tbody>
               {matchesByFile[file].map(m => (
@@ -30,7 +30,7 @@ function Matches({ repoUrl, branch, matches }) {
               ))}
             </tbody>
           </MatchesTable>
-        </BorderBox>
+        </Box>
       </div>
     );
   });
@@ -43,12 +43,12 @@ const codeFont =
 
 const MatchRow = styled.tr`
   &:hover {
-    background: ${gray[1]};
+    background: ${colors.gray[1]};
   }
 `;
 
 const LineNumber = styled.td`
-  color: ${gray[5]};
+  color: ${colors.gray[5]};
   font-family: ${codeFont};
   font-size: 12px;
   padding: 3px 10px;
@@ -67,7 +67,7 @@ const MatchContent = styled.td`
 
 const MatchHightlight = styled.span`
   font-weight: 600;
-  background: ${yellow[2]};
+  background: ${colors.yellow[2]};
 `;
 
 function MatchLine({ match, fileUrl }) {

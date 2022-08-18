@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Flex, TextInput } from "@primer/components";
+import { Button, Box, TextInput } from "@primer/react";
 import styled from "styled-components";
 
 const SearchBox = styled(TextInput)`
@@ -43,7 +43,7 @@ class Form extends React.Component {
   render() {
     return (
       <form onSubmit={this.handleSubmit}>
-        <Flex>
+        <Box display="flex">
           <SearchBox
             autocomplete="false"
             name="query"
@@ -53,10 +53,10 @@ class Form extends React.Component {
             value={this.state.query}
             onChange={this.handleInputChange}
           />
-          <Button disabled={!this.props.active} type="submit" ml={2}>
+          <Button disabled={!this.props.active} type="submit" sx={{ ml: 2 }} size="large">
             Search
           </Button>
-        </Flex>
+        </Box>
         <SearchOption>
           <input
             name="regex"

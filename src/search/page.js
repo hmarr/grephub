@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import queryString from "query-string"
 import RepoSearch from "./repo-search";
+import { useParams } from "react-router-dom";
 
-function SearchPage({ match }) {
-  const { account, repo } = match.params;
+function SearchPage() {
+  const { account, repo } = useParams();
   const query = queryString.parse(window.location.search);
   const initialQuery = query["q"];
 
