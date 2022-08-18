@@ -2,9 +2,9 @@
 
 Search GitHub repositories with regexes. GrepHub is like `git grep`, but for every repository on GitHub.
 
-Just replace "github.com" in a repository's URL with "grephub.com", and you're all set.
+Just replace "github.com" in a repository's URL with "grephub.hmarr.dev", and you're all set.
 
-For instance, to search lodash, go to https://grephub.com/lodash/lodash.
+For instance, to search lodash, go to https://grephub.hmarr.dev/lodash/lodash.
 
 ### Caveats
 
@@ -35,4 +35,3 @@ To run the backend function, make sure you have the Go toolchain installed, then
 $ make build-functions
 $ functions/search
 ```
-

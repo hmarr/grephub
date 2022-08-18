@@ -20,12 +20,12 @@ function Home() {
         GitHub.
       </p>
       <p>
-        Just replace "github.com" in a repository's URL with "grephub.com", and
+        Just replace "github.com" in a repository's URL with "grephub.hmarr.dev", and
         you're all set.
       </p>
       <p>
         For instance, to search lodash, go to{" "}
-        <Link to="/lodash/lodash">grephub.com/lodash/lodash</Link>.
+        <Link to="/lodash/lodash">grephub.hmarr.dev/lodash/lodash</Link>.
       </p>
 
       <Heading fontSize={3}>Caveats</Heading>
